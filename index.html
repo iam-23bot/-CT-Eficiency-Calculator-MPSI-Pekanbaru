@@ -34,25 +34,37 @@
     <div class="result" id="result"></div>
   </div>
   <div class="watermark">WTP MPSI BOSKU</div>
+
   <script>
     function getWetBulb(T, RH) {
       return T * Math.atan(0.151977 * Math.sqrt(RH + 8.313659)) +
              Math.atan(T + RH) - Math.atan(RH - 1.676331) +
              0.00391838 * Math.pow(RH, 1.5) * Math.atan(0.023101 * RH) - 4.686035;
     }
+
     function calculateEfficiency() {
       const inlet = parseFloat(document.getElementById('inlet').value);
       const outlet = parseFloat(document.getElementById('outlet').value);
       const t = parseFloat(document.getElementById('t').value);
       const rh = parseFloat(document.getElementById('rh').value);
+
       if (isNaN(inlet) || isNaN(outlet) || isNaN(t) || isNaN(rh)) {
         document.getElementById('result').innerHTML = 'Mohon isi semua input dengan benar.';
         return;
       }
+
       const twb = getWetBulb(t, rh);
       const efficiency = ((inlet - outlet) / (inlet - twb)) * 100;
+
       document.getElementById('result').innerHTML =
         `Wet Bulb Temp (Twb): ${twb.toFixed(2)} °C<br>Efisiensi Menara Pendingin: ${efficiency.toFixed(2)} %`;
+    }
+
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(() => console.log('Service Worker Registered'))
+        .catch(error => console.error('SW registration failed:', error));
     }
   </script>
 </body>
