@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cooling Tower Efficiency - WTP MPSI BOSKU</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2b2b2b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <style>
+    body { font-family: Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 1rem; min-height: 100vh; position: relative; }
+    .container { max-width: 500px; margin: auto; background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    h2 { text-align: center; }
+    input { width: 100%; padding: 0.5rem; margin: 0.5rem 0; }
+    button { padding: 0.7rem; width: 100%; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    .result { margin-top: 1rem; background: #eef; padding: 1rem; border-radius: 5px; }
+    .watermark { position: absolute; bottom: 5px; width: 100%; text-align: center; opacity: 0.4; font-size: 0.9rem; color: #333; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Cooling Tower Efficiency</h2>
+    <label>Suhu Inlet Cooling Tower (°C):</label>
+    <input type="number" id="inlet">
+    <label>Suhu Outlet Cooling Tower (°C):</label>
+    <input type="number" id="outlet">
+    <label>Suhu Udara (°C):</label>
+    <input type="number" id="t">
+    <label>Kelembaban Relatif (%):</label>
+    <input type="number" id="rh">
+    <button onclick="calculateEfficiency()">Hitung Efisiensi</button>
+    <div class="result" id="result"></div>
+  </div>
+  <div class="watermark">WTP MPSI BOSKU</div>
+  <script>
+    function getWetBulb(T, RH) {
+      return T * Math.atan(0.151977 * Math.sqrt(RH + 8.313659)) +
+             Math.atan(T + RH) - Math.atan(RH - 1.676331) +
+             0.00391838 * Math.pow(RH, 1.5) * Math.atan(0.023101 * RH) - 4.686035;
+    }
+    function calculateEfficiency() {
+      const inlet = parseFloat(document.getElementById('inlet').value);
+      const outlet = parseFloat(document.getElementById('outlet').value);
+      const t = parseFloat(document.getElementById('t').value);
+      const rh = parseFloat(document.getElementById('rh').value);
+      if (isNaN(inlet) || isNaN(outlet) || isNaN(t) || isNaN(rh)) {
+        document.getElementById('result').innerHTML = 'Mohon isi semua input dengan benar.';
+        return;
+      }
+      const twb = getWetBulb(t, rh);
+      const efficiency = ((inlet - outlet) / (inlet - twb)) * 100;
+      document.getElementById('result').innerHTML =
+        `Wet Bulb Temp (Twb): ${twb.toFixed(2)} °C<br>Efisiensi Menara Pendingin: ${efficiency.toFixed(2)} %`;
+    }
+  </script>
+</body>
+</html>
